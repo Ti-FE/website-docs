@@ -65,6 +65,7 @@ const Footer = prop => {
               type="innerLink"
             >
               {<FormattedMessage id="languageSwitcher" />}
+
             </IntlLink>
           </div>
         </div>

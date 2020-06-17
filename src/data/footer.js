@@ -56,12 +56,14 @@ const footerColumns = [
       {
         name: 'footerColumnItem.case',
         link: 'https://pingcap.com/cases-cn/',
+
         linkType: 'outBoundLink',
       },
       {
         name: 'footerColumnItem.pu',
         link: 'https://university.pingcap.com',
         linkType: 'outBoundLink',
+
       },
       {
         name: 'footerColumnItem.tidbInAction',
