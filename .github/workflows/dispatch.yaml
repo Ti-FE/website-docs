@@ -15,7 +15,7 @@ jobs:
     - name: Repository Dispatch
       uses: peter-evans/repository-dispatch@v1.1.1
       with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           repository: Ti-FE/website-docs/
           event-type: triggered
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "repo": "${{ github.repository }}"}'
