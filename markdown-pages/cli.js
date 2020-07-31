@@ -176,15 +176,14 @@ function sync(argv) {
         () => createReplaceCopyableStream(),
         () => createReplaceTabPanelStream(),
       ])
-
       break
+
     case 'docs-dm':
       handleSync({ owner: 'pingcap', repo, ref, base, head }, [
         () => createReplaceImagePathStream(TIDB_DATA_MIGRATION_IMAGE_CDN_URL),
         () => createReplaceCopyableStream(),
         () => createReplaceTabPanelStream(),
       ])
-
       break
 
     case 'dbaas-docs':
@@ -193,8 +192,24 @@ function sync(argv) {
         () => createReplaceCopyableStream(),
         () => createReplaceTabPanelStream(),
       ])
-
       break
+
+    case 'docs':
+      handleSync({ owner: 'pingcap', repo, ref, base, head }, [
+        () => createReplaceImagePathStream(DOCS_IMAGE_CDN_URL),
+        () => createReplaceCopyableStream(),
+        () => createReplaceTabPanelStream(),
+      ])
+      break
+
+    case 'docs-cn':
+      handleSync({ owner: 'pingcap', repo, ref, base, head }, [
+        () => createReplaceImagePathStream(DOCS_CN_IMAGE_CDN_URL),
+        () => createReplaceCopyableStream(),
+        () => createReplaceTabPanelStream(),
+      ])
+      break
+
     default:
       break
   }

@@ -52,7 +52,7 @@ jobs:
         uses: andstor/file-existence-action@v1.0.1
         id: check_files
         with:
-          files: "./markdown-pages/contents/en/docs-dm/master/_index.md"
+          files: "./markdown-pages/contents/en/docs-dm/master/page-does-not-exist.md"
           
       - name: list markdown pages content
         run: ls ./markdown-pages/contents/
