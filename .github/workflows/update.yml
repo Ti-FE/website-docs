@@ -64,7 +64,7 @@ jobs:
         uses: andstor/file-existence-action@v1.0.1
         id: check_files
         with:
-          files: "./markdown-pages/contents/en/docs-dm/master/_index.md"
+          files: "./markdown-pages/contents/en/docs-dm/master/file-does-not-exist.md"
           
       - name: list markdown pages content
         run: ls ./markdown-pages/contents/
@@ -74,6 +74,7 @@ jobs:
         if: steps.check_files.outputs.files_exists != 'true'
         run: |
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-dm:all
+          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-dbaas:all
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb-operator:all
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:en:all
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:zh:all
