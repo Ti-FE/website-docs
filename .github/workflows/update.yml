@@ -14,6 +14,18 @@ jobs:
           echo "${{ github.event.client_payload.repo }}"
           echo "${{ github.event.client_payload.ref }}"
           echo "${{ github.event.client_payload.sha }}"
+
+      - name: Set known_hosts
+        id: know-hosts
+        run: |
+          echo "::set-output name=BJ1::$(ssh-keyscan -H ${{ secrets.BJ_1_HOST }})"
+          
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: |
+            ${{ steps.know-hosts.outputs.BJ1 }}
       
       # make sure there is only one workflow running 
       - name: Turnstyle
@@ -145,3 +157,7 @@ jobs:
         run: |
           ls ./scripts/
           bash ./scripts/get-latest-commits.sh ${{ secrets.GH_TOKEN }}
+
+      - name: Deploy
+        run: |
+          rsync -avz --delete public/ "${{ secrets.SSH_USER }}@${{ secrets.BJ_1_HOST }}:${{ secrets.DEPLOY_PATH }}"
