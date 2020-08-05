@@ -55,8 +55,7 @@ jobs:
           path: ./markdown-pages/contents/
           key: ${{ runner.os }}-markdown-contents-cache-${{ github.event.client_payload.sha }}
           restore-keys: |
-            ${{ runner.os }}-markdown-contents-cache-${{ github.event.client_payload.sha }}
-            ${{ runner.os }}-markdown-contents-cache
+            ${{ runner.os }}-markdown-contents-cache-
             ${{ runner.os }}-
       
       # check if the markdown-contents been stored successfully
@@ -118,7 +117,6 @@ jobs:
           path: ./.cache
           key: ${{ runner.os }}-gatsby-cache-${{ github.event.client_payload.sha }}
           restore-keys: |
-            ${{ runner.os }}-gatsby-cache-${{ github.event.client_payload.sha }}
             ${{ runner.os }}-gatsby-cache-
 
       - name: Restore gatsby build
@@ -128,7 +126,6 @@ jobs:
           path: ./public
           key: ${{ runner.os }}-gatsby-build-${{ github.event.client_payload.sha }}
           restore-keys: |
-            ${{ runner.os }}-gatsby-build-${{ github.event.client_payload.sha }}
             ${{ runner.os }}-gatsby-build-
 
       - name: Build website
