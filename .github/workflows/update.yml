@@ -131,17 +131,17 @@ jobs:
       - name: Build website
         run: GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES=true GATSBY_ALGOLIA_APPLICATION_ID=${{ secrets.ALGOLIA_APPLICATION_ID }} GATSBY_ALGOLIA_API_KEY=${{ secrets.ALGOLIA_API_KEY }} yarn build --write-to-file
 
-      - name: Move changed files from gatsby
-        run: (yes|cp -f .cache/*Pages.txt public)|true
+      # - name: Move changed files from gatsby
+      #   run: (yes|cp -f .cache/*Pages.txt public)|true
 
-      - name: cat new page
-        run : cat ./public/newPages.txt
+      # - name: cat new page
+      #   run : cat ./public/newPages.txt
       
-      - name: cat deleted page
-        run : cat ./public/deletedPages.txt
+      # - name: cat deleted page
+      #   run : cat ./public/deletedPages.txt
 
-      - name: List public
-        run: ls ./public
+      # - name: List public
+      #   run: ls ./public
 
       # update cache commit to corresponding file
       - name: Update cache commit hash
