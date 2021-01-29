@@ -1,6 +1,7 @@
 import '../styles/components/toc.scss'
 
 import React, { useEffect, useRef } from 'react'
+import { navigate } from 'gatsby'
 
 import PropTypes from 'prop-types'
 import html from 'remark-html'
@@ -20,6 +21,12 @@ const TOC = ({ data, pathPrefix, fullPath }) => {
 
     function fold(li) {
       Array.from(li.children).forEach((list) => {
+        if (list && list.tagName === 'SPAN') {
+          list.style.display = 'inlin-block'
+        } else if (list && list.tagName === 'UL') {
+          list.style.display = 'none'
+        }
+
         Array.from(list.children).forEach((el) => {
           if (
             el.classList.contains('can-unfold') &&
@@ -29,6 +36,7 @@ const TOC = ({ data, pathPrefix, fullPath }) => {
             fold(el)
           }
         })
+
         requestAnimationFrame(() => {
           list.style.height = list.scrollHeight + 'px'
 
@@ -40,15 +48,29 @@ const TOC = ({ data, pathPrefix, fullPath }) => {
     }
 
     function unfold(li) {
-      Array.from(li.children).forEach(
-        (el) => (el.style.height = el.scrollHeight + 'px')
-      )
+      Array.from(li.children).forEach((el) => {
+        if (el && el.tagName === 'SPAN') {
+          el.style.display = 'inlin-block'
+        } else if (el && el.tagName === 'UL') {
+          el.style.display = 'block'
+        }
+
+        return (el.style.height = el.scrollHeight + 'px')
+      })
     }
 
     function clickEvent(e) {
       e.stopPropagation()
 
-      const li = e.target
+      let li = e.target
+
+      if (
+        e.target.classList.contains('add-icon') ||
+        e.target.classList.contains('remove-icon')
+      ) {
+        li = e.target.parentElement
+      }
+
       li.parentElement.style.height = null
 
       // keep only one unfolded level
@@ -77,9 +99,21 @@ const TOC = ({ data, pathPrefix, fullPath }) => {
 
     function retrieveLi(ul) {
       Array.from(ul.children).forEach((li) => {
-        if (li.children[0].tagName.toLowerCase() === 'ul') {
+        if (li.children[0] && li.children[0].tagName.toLowerCase() === 'ul') {
           li.classList.add('can-unfold', 'folded')
-          li.addEventListener('click', clickEvent)
+
+          if (!li.parentElement.classList.contains('top')) {
+            let unfoldEle = document.createElement('span')
+            let foldEle = document.createElement('span')
+            unfoldEle.classList.add('add-icon')
+            foldEle.classList.add('remove-icon')
+            li.insertBefore(unfoldEle, li.children[0])
+            li.insertBefore(foldEle, li.children[0])
+            unfoldEle.addEventListener('click', clickEvent)
+            foldEle.addEventListener('click', clickEvent)
+          } else {
+            li.addEventListener('click', clickEvent)
+          }
 
           Array.from(li.children).forEach(retrieveLi)
         }
@@ -90,7 +124,7 @@ const TOC = ({ data, pathPrefix, fullPath }) => {
       ul.classList.add('top')
 
       Array.from(ul.children).forEach((li) => {
-        if (li.children[0].tagName.toLowerCase() !== 'ul') {
+        if (li.children[0] && li.children[0].tagName.toLowerCase() !== 'ul') {
           li.classList.add('has-no-subject')
         }
       })
@@ -103,12 +137,38 @@ const TOC = ({ data, pathPrefix, fullPath }) => {
     })
   }
 
+  const bindNavigateToAllLinks = () => {
+    const toc = tocRef.current
+
+    toc.addEventListener(
+      'click',
+      (e) => {
+        const current = e.target
+        const type = current.tagName
+
+        if (type === 'A') {
+          const href = current.getAttribute('href')
+          const isInternal = /^\/(?!\/)/.test(href)
+
+          if (isInternal) {
+            e.preventDefault()
+
+            navigate(href)
+          }
+        }
+      },
+      true
+    )
+  }
+
   useEffect(() => {
     bindClickEventToTOC()
+    bindNavigateToAllLinks()
   }, [])
 
   useEffect(() => {
     const absPathRegx = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}/
+
     Array.from(tocRef.current.getElementsByTagName('a')).forEach((a) => {
       // escape outbound path replacement
       if (!a.getAttribute('href').match(absPathRegx)) {
@@ -146,8 +206,10 @@ const TOC = ({ data, pathPrefix, fullPath }) => {
               console.log('Your browser does not support scrollTo API')
               tocRef.current.scrollTop = tocClientRect.height + dy
             }
+
+            const leftTOCColumn = document.getElementsByClassName('left-column')
             // https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll
-            tocRef.current.scrollTo({
+            leftTOCColumn[0].scrollTo({
               top: tocClientRect.height + dy - 100,
               left: 0,
               behavior: 'smooth',

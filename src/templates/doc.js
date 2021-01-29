@@ -2,7 +2,7 @@ import '../styles/templates/doc.scss'
 
 import * as Shortcodes from '../components/shortcodes'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import DownloadPDF from '../components/downloadPDF'
 import { FormattedMessage } from 'react-intl'
@@ -20,6 +20,10 @@ import replaceInternalHref from '../lib/replaceInternalHref'
 import { useDispatch } from 'react-redux'
 import ImproveDocLink from '../components/improveDocLink'
 import FeedbackDocLink from '../components/feedbackDocLink'
+import GitCommitInfo from '../components/gitCommitInfo'
+import UserFeedback from '../components/userFeedback'
+import { useLocation } from '@reach/router'
+import PromptBanner from '../../images/community-careers-banner.jpg'
 
 const Doc = ({
   pageContext: {
@@ -30,6 +34,7 @@ const Doc = ({
     downloadURL,
     fullPath,
     versions,
+    langSwitchable,
   },
   data,
 }) => {
@@ -37,9 +42,8 @@ const Doc = ({
   const { frontmatter, tableOfContents } = mdx
   const docRefArray = convertDocAndRef(relativeDir.split('/'))
   const repoInfo = getRepoInfo(relativeDir, locale)
-
-  const [showProgress, setShowProgress] = useState(false)
-  const [readingProgress, setReadingProgress] = useState(0)
+  const location = useLocation()
+  const currentPath = location.pathname
 
   function addStyleToQuote(quote, type) {
     quote.classList.add('doc-blockquote')
@@ -93,8 +97,6 @@ const Doc = ({
       const winScrollTop = document.documentElement.scrollTop
       const toFooter = winScrollHeight - winClientHeight - footerHeight
 
-      setShowProgress(winScrollTop > 0)
-
       if (winScrollTop > toFooter && !isReachFooter) {
         isReachFooter = true
       }
@@ -105,7 +107,15 @@ const Doc = ({
 
       const height = winScrollHeight - winClientHeight
       const scrolled = ((winScrollTop / height) * 100).toFixed()
-      setReadingProgress(scrolled)
+
+      const progressEle = document.querySelector('progress')
+      progressEle.value = scrolled
+
+      if (winScrollTop > 0) {
+        progressEle.classList.add('show')
+      } else {
+        progressEle.classList.remove('show')
+      }
     }
 
     window.addEventListener('scroll', scrollListener)
@@ -149,6 +159,7 @@ const Doc = ({
       <ul>
         {items.map((item) => (
           <li key={item.url}>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <a
               href={'#' + replaceItemURL(item.url)}
               dangerouslySetInnerHTML={{ __html: item.title }}
@@ -169,7 +180,11 @@ const Doc = ({
   }
 
   return (
-    <Layout locale={locale} forbidResetDocInfo={true}>
+    <Layout
+      locale={locale}
+      forbidResetDocInfo={true}
+      langSwitchable={langSwitchable}
+    >
       <SEO
         title={frontmatter.title}
         meta={[
@@ -195,18 +210,14 @@ const Doc = ({
         ]}
       />
       <article className="PingCAP-Doc">
-        {showProgress && (
-          <progress
-            className="progress is-primary doc-progress"
-            value={readingProgress}
-            max="100"
-          >
-            {readingProgress}
-          </progress>
-        )}
+        <progress
+          className="progress is-primary doc-progress"
+          value="0"
+          max="100"
+        />
         <section className="section container">
-          <div className="columns">
-            <div className="column is-2 left-column">
+          <div className="content-columns columns">
+            <div className="left-column column">
               <VersionSwitcher
                 relativeDir={relativeDir}
                 base={base}
@@ -227,28 +238,22 @@ const Doc = ({
                 fullPath={fullPath}
               />
             </div>
-            <div className="column is-8">
-              <section className="markdown-body doc-content">
-                <MDXProvider components={Shortcodes}>
-                  <MDXRenderer>{mdx.body}</MDXRenderer>
-                </MDXProvider>
-              </section>
-            </div>
-            <div className="column is-2 doc-toc-column">
-              <>
-                {docRefArray[0] === 'tidbcloud' ? (
-                  ''
-                ) : (
-                  <div className="docs-operation">
-                    {locale === 'zh' && (
-                      <DownloadPDF downloadURL={downloadURL} />
-                    )}
-                    <ImproveDocLink repoInfo={repoInfo} base={base} />
-                    <FeedbackDocLink repoInfo={repoInfo} base={base} />
-                  </div>
-                )}
-              </>
-
+            <section className="markdown-body doc-content column">
+              <MDXProvider components={Shortcodes}>
+                <MDXRenderer>{mdx.body}</MDXRenderer>
+              </MDXProvider>
+              <GitCommitInfo
+                repoInfo={repoInfo}
+                base={base}
+                title={frontmatter.title}
+              />
+            </section>
+            <div className="doc-toc-column column">
+              <div className="docs-operation">
+                <DownloadPDF downloadURL={downloadURL} />
+                <ImproveDocLink repoInfo={repoInfo} base={base} />
+                <FeedbackDocLink repoInfo={repoInfo} base={base} />
+              </div>
               <section className="doc-toc">
                 <div className="title">
                   <FormattedMessage id="doc.toc" />
@@ -257,10 +262,22 @@ const Doc = ({
                   {tableOfContents.items && renderItems(tableOfContents.items)}
                 </div>
               </section>
+              {currentPath === '/zh/tidb/stable' && (
+                <a
+                  className="Promote"
+                  href="https://pingcap.com/community-cn/careers/join/"
+                  // eslint-disable-next-line react/jsx-no-target-blank
+                  target="_blank"
+                >
+                  <img src={PromptBanner} alt="PingCAP community careers" />
+                </a>
+              )}
             </div>
           </div>
         </section>
       </article>
+
+      <UserFeedback title={frontmatter.title} locale={locale} />
     </Layout>
   )
 }

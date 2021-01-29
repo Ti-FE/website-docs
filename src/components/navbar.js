@@ -40,7 +40,9 @@ const Navbar = (prop) => {
         ? location.pathname.split('/')[2]
         : location.pathname.split('/')[1]
     setActiveNav(pageType)
+  }, [locale, location.pathname])
 
+  useEffect(() => {
     const scrollListener = () => {
       const winScrollTop = document.documentElement.scrollTop
 
@@ -128,8 +130,22 @@ const Navbar = (prop) => {
                 <FormattedMessage id="navbar.cloud" />
               </IntlLink>
             )}
+            {locale === 'zh' && (
+              <IntlLink
+                to="/dev-guide/dev"
+                className={`navbar-item with-main-section ${
+                  activeNav === 'dev-guide' && !burgerActive ? 'is-active' : ''
+                }`}
+              >
+                <FormattedMessage id="navbar.devGuide" />
+              </IntlLink>
+            )}
             <a
-              href="mailto:info@pingcap.com"
+              href={
+                locale === 'zh'
+                  ? 'mailto:info@pingcap.com'
+                  : 'https://pingcap.com/contact-us/'
+              }
               className="navbar-item with-main-section"
               target="_blank"
               rel="noreferrer"

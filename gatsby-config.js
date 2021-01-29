@@ -1,4 +1,5 @@
 const purgecssWhitelist = require('./purgecss-whitelist')
+const { remarkSyntaxDiagram } = require('./src/lib/remarkSyntaxDiagram')
 
 module.exports = {
   siteMetadata: {
@@ -52,6 +53,7 @@ module.exports = {
             },
           },
         ],
+        remarkPlugins: [() => remarkSyntaxDiagram],
       },
     },
     {
@@ -77,17 +79,23 @@ module.exports = {
         ],
         whitelistPatternsChildren: [/^PingCAP-Doc/],
         whitelist: purgecssWhitelist,
-        ignore: [
-          'prismjs/',
-        ],
+        ignore: ['prismjs/'],
       },
     },
     `gatsby-plugin-meta-redirect`,
     {
       resolve: `gatsby-plugin-sitemap`,
       options: {
-        output: `/website-docs-sitemap.xml`,
+        output: `/sitemap.xml`,
         exclude: ['/404', '/zh/404', '/search', '/zh/search'],
+      },
+    },
+    {
+      resolve: 'gatsby-plugin-robots-txt',
+      options: {
+        host: 'https://docs.pingcap.com',
+        sitemap: 'https://docs.pingcap.com/sitemap.xml',
+        policy: [{ userAgent: '*', allow: '/' }],
       },
     },
   ],
