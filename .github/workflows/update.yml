@@ -130,7 +130,7 @@ jobs:
         run: (yes|cp -f .cache/*Pages.txt public)|true
 
       - name: Consolidate duplicate urls
-        run: cd public && bash consolidate-duplicate-urls.sh
+        run: cd public && bash scripts/consolidate-duplicate-urls.sh
 
       - name: Deploy
         run: |
