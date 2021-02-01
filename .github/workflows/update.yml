@@ -129,6 +129,9 @@ jobs:
       - name: Move changed files from gatsby
         run: (yes|cp -f .cache/*Pages.txt public)|true
 
+      - name: Consolidate duplicate urls
+        run: cd public && bash consolidate-duplicate-urls.sh
+
       - name: Deploy
         run: |
           rsync -avz --delete public/ "${{ secrets.SSH_USER }}@${{ secrets.BJ_1_HOST }}:${{ secrets.DEPLOY_PATH }}"
