@@ -24,7 +24,9 @@ consolidate_duplicate_urls() {
 
                 if [ -f $file_path_in_stable ]; then
                     echo "html" $html
-                    sed -i "s@<\/head>@<link rel=\"canonical\" href=\"https:\/\/docs.pingcap.com\/$file_path_in_stable\" \/><\/head>@g" $html
+                    path=$(echo $doc_temp_path | sed -E "s/\/v[1-9]\.[0-9]\/|\/dev\//\/stable\//g")
+                    echo "path" $path
+                    sed -i "s@<\/head>@<link rel=\"canonical\" href=\"https:\/\/docs.pingcap.com\/$path\/\" \/><\/head>@g" $html
                 fi
             fi
         done
