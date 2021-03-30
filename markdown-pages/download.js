@@ -42,11 +42,9 @@ async function writeContent(url, distPath, pipelines = []) {
     })
 
   let readableStream = toReadableStream(_data)
-  console.log('readableStream', readableStream)
   if (pipelines.length) {
     pipelines.forEach((p) => (readableStream = readableStream.pipe(p())))
   }
-  console.log('dddddd', readableStream)
   readableStream.pipe(writeStream)
 }
 
