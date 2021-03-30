@@ -30,18 +30,8 @@ function getCommitInfo(owner, repo, base, head) {
 async function writeContent(url, distPath, pipelines = []) {
   const writeStream = fs.createWriteStream(distPath)
   writeStream.on('close', () => sig.success(`Downloaded: ${url}`))
-  console.log('============')
-  const _data = await http
-    .get(url)
-    .then((resp) => {
-      console.log('resp.data', resp.data)
-      return resp.data
-    })
-    .catch((error) => {
-      console.log('error', error)
-    })
 
-  let readableStream = toReadableStream(_data)
+  let readableStream = toReadableStream(await http.get(url).data)
   if (pipelines.length) {
     pipelines.forEach((p) => (readableStream = readableStream.pipe(p())))
   }
@@ -196,7 +186,7 @@ async function handleSync(metaInfo, pipelines = []) {
             ref,
             renamedFilePathArrWithoutLang
           )
-          writeContent(raw_url, downloadToPath, pipelines)
+          writeContent(contents_url, downloadToPath, pipelines)
           fs.unlink(renamedFilePath, (err) => {
             if (err) {
               sig.error(`Fail to unlink ${renamedFilePath}: ${err}`)
