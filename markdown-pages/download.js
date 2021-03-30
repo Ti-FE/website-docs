@@ -109,7 +109,7 @@ async function handleSync(metaInfo, pipelines = []) {
     const { files } = (await getCommitInfo(owner, repo, base, head)).data
 
     files.forEach((file) => {
-      const { filename, status, raw_url, previous_filename } = file
+      const { filename, status, contents_url, previous_filename } = file
       if (shouldIgnorePath(filename)) {
         return
       }
@@ -166,7 +166,7 @@ async function handleSync(metaInfo, pipelines = []) {
       switch (status) {
         case 'added':
         case 'modified':
-          writeContent(raw_url, downloadToPath, pipelines)
+          writeContent(contents_url, downloadToPath, pipelines)
 
           break
         case 'removed':
