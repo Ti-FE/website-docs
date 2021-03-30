@@ -72,7 +72,7 @@ jobs:
         if: github.event.client_payload.download_type == 'full'
         run: |
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-dm:all
-          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-dbaas
+          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_PRIVATE_REPO_TOKEN }} yarn download:docs-dbaas
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb-operator:all
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:en:all
           GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:zh:all
@@ -103,7 +103,7 @@ jobs:
       # incremental download the triggering repo by comparing the base and head commits
       - name: Sync docs
         if: github.event.client_payload.download_type != 'full' && steps.git-ref.outputs.repo != 'website-docs'
-        run: GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn sync ${{ steps.git-ref.outputs.repo }} ${{ steps.git-ref.outputs.ref }} ${{ steps.cache-commit.outputs.base }} ${{ github.event.client_payload.sha }}
+        run: GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_PRIVATE_REPO_TOKEN }} yarn sync ${{ steps.git-ref.outputs.repo }} ${{ steps.git-ref.outputs.ref }} ${{ steps.cache-commit.outputs.base }} ${{ github.event.client_payload.sha }}
 
       - name: Restore gatsby cache
         uses: actions/cache@v2
