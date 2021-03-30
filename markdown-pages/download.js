@@ -30,8 +30,9 @@ function getCommitInfo(owner, repo, base, head) {
 async function writeContent(url, distPath, pipelines = []) {
   const writeStream = fs.createWriteStream(distPath)
   writeStream.on('close', () => sig.success(`Downloaded: ${url}`))
-
+  console.log('============')
   let readableStream = toReadableStream(http.get(url).data)
+  console.log('readableStream', readableStream)
   if (pipelines.length) {
     pipelines.forEach((p) => (readableStream = readableStream.pipe(p())))
   }
