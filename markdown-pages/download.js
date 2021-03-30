@@ -31,7 +31,7 @@ async function writeContent(url, distPath, pipelines = []) {
   const writeStream = fs.createWriteStream(distPath)
   writeStream.on('close', () => sig.success(`Downloaded: ${url}`))
 
-  let readableStream = toReadableStream((await axios.get(url)).data)
+  let readableStream = toReadableStream(http.get(url).data)
   if (pipelines.length) {
     pipelines.forEach((p) => (readableStream = readableStream.pipe(p())))
   }
