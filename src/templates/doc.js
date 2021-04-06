@@ -179,6 +179,29 @@ const Doc = ({
     toc.classList.toggle('show')
   }
 
+  const DeprecationNotice = () => {
+    return (
+      <Shortcodes.Important>
+        <FormattedMessage
+          id="doc.deprecation.context"
+          values={{
+            link: (
+              <a
+                href={
+                  locale === 'zh'
+                    ? '/zh/tidb-in-kubernetes/stable/'
+                    : '/tidb-in-kubernetes/stable/'
+                }
+              >
+                <FormattedMessage id="doc.deprecation.link" />
+              </a>
+            ),
+          }}
+        />
+      </Shortcodes.Important>
+    )
+  }
+
   return (
     <Layout
       locale={locale}
@@ -239,20 +262,28 @@ const Doc = ({
               />
             </div>
             <section className="markdown-body doc-content column">
+              {repoInfo.repo === 'docs-tidb-operator' &&
+                repoInfo.ref === 'release-1.0' && <DeprecationNotice />}
               <MDXProvider components={Shortcodes}>
                 <MDXRenderer>{mdx.body}</MDXRenderer>
               </MDXProvider>
-              <GitCommitInfo
-                repoInfo={repoInfo}
-                base={base}
-                title={frontmatter.title}
-              />
+              {docRefArray[0] !== 'tidbcloud' && (
+                <GitCommitInfo
+                  repoInfo={repoInfo}
+                  base={base}
+                  title={frontmatter.title}
+                />
+              )}
             </section>
             <div className="doc-toc-column column">
               <div className="docs-operation">
                 <DownloadPDF downloadURL={downloadURL} />
-                <ImproveDocLink repoInfo={repoInfo} base={base} />
-                <FeedbackDocLink repoInfo={repoInfo} base={base} />
+                {docRefArray[0] !== 'tidbcloud' && (
+                  <>
+                    <ImproveDocLink repoInfo={repoInfo} base={base} />
+                    <FeedbackDocLink repoInfo={repoInfo} base={base} />
+                  </>
+                )}
               </div>
               <section className="doc-toc">
                 <div className="title">
