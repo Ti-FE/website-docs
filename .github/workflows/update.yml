@@ -71,12 +71,10 @@ jobs:
       - name: Check restore status
         if: github.event.client_payload.download_type == 'full'
         run: |
-          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-dm:all
-          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_PRIVATE_REPO_TOKEN }} yarn download:docs-dbaas
-          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb-operator:all
-          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:en:all
-          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:zh:all
-          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-dev-guide:zh:all
+          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:en --ref release-5.1
+          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:en --ref release-5.0
+          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:zh --ref release-5.1
+          GITHUB_AUTHORIZATION_TOKEN=${{ secrets.GH_TOKEN }} yarn download:docs-tidb:zh --ref release-5.0
 
       # set ref and name of the repo, which triggering website build
       - name: Split ref
